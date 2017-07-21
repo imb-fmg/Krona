@@ -36,6 +36,7 @@ qw(
 	hueBad
 	hueGood
 	url
+	pipeMode
 	postUrl
 	taxonomy
 );
@@ -94,6 +95,42 @@ my @datasetNames;
 my $useScore = 1; # is score column present?
 my $eVal; # is score e-value (inferred by negative scores)?
 my $useMag = getOption('magCol'); # using magnitude values?
+my $pipeMode = getOption('pipeMode');
+my $recordCnt = 0;
+
+my @attributeNames =
+(
+	'magnitude',
+	'magnitudeUnassigned',
+	'count',
+	'unassigned',
+	'taxon',
+	'rank',
+);
+
+my @attributeDisplayNames =
+(
+	$useMag ? 'Magnitude' : (getOption('queryCol') ? undef : 'Count'),
+	$useMag ? 'Unassigned magnitude' : (getOption('queryCol') ? undef : 'Unassigned'),
+	getOption('queryCol') ? 'Count' : undef,
+	getOption('queryCol') ? 'Unassigned' : undef,
+	'Taxon',
+	'Rank',
+);
+
+my @scoreArgs;
+
+if ( $useScore )
+{
+	push @attributeNames, 'score';
+	push @attributeDisplayNames, getScoreName;
+	
+	@scoreArgs =
+	(
+		$eVal ? getOption('hueGood') : getOption('hueBad'),
+		$eVal ? getOption('hueBad') : getOption('hueGood')
+	)
+}
 
 foreach my $input (@ARGV)
 {
@@ -192,6 +229,13 @@ foreach my $input (@ARGV)
 		}
 		
 		addByTaxID($tree, $set, $taxID, $queryID, $magnitude, $score);
+		if ( $pipeMode )
+		{
+			$recordCnt++;
+			if ($recordCnt % $pipeMode == 0) {
+				writeTree($tree, \@attributeNames, \@attributeDisplayNames, \@datasetNames, @scoreArgs);
+			}
+		}
 	}
 	
 	if ( ! getOption('combine') )
@@ -200,40 +244,6 @@ foreach my $input (@ARGV)
 	}
 	
 	close IN;
-}
-
-my @attributeNames =
-(
-	'magnitude',
-	'magnitudeUnassigned',
-	'count',
-	'unassigned',
-	'taxon',
-	'rank',
-);
-
-my @attributeDisplayNames =
-(
-	$useMag ? 'Magnitude' : (getOption('queryCol') ? undef : 'Count'),
-	$useMag ? 'Unassigned magnitude' : (getOption('queryCol') ? undef : 'Unassigned'),
-	getOption('queryCol') ? 'Count' : undef,
-	getOption('queryCol') ? 'Unassigned' : undef,
-	'Taxon',
-	'Rank',
-);
-
-my @scoreArgs;
-
-if ( $useScore )
-{
-	push @attributeNames, 'score';
-	push @attributeDisplayNames, 'Avg. score';
-	
-	@scoreArgs =
-	(
-		$eVal ? getOption('hueGood') : getOption('hueBad'),
-		$eVal ? getOption('hueBad') : getOption('hueGood')
-	)
 }
 
 writeTree

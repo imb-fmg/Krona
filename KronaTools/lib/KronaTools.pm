@@ -87,6 +87,7 @@ my %options =
 	'hueBad' => 0,
 	'hueGood' => 120,
 	'key' => 1,
+	'pipeMode' => 0,
 	'queryCol' => 1,
 	'scoreCol' => 3,
 	'standalone' => 1,
@@ -134,6 +135,8 @@ my %optionFormats =
 		'p',
 	'phymm' =>
 		'p',
+	'pipeMode' =>
+		'z=i',
 	'postUrl' =>
 		'post=s',
 	'noMag' =>
@@ -197,6 +200,7 @@ my %optionDescriptions =
 	'noRank' => 'Collapse assignments to taxa with ranks labeled "no rank" by moving up to parent.',
 	'out' => 'Output file name.',
 	'phymm' => 'Input is phymm only (no confidence scores).',
+	'pipeMode' => 'Writes out the tree regulary (every Nth record), if data is streamed via input pipe.',
 	'postUrl' => 'Url to send query IDs to (instead of listing them) for each wedge. The query IDs will be sent as a comma separated list in the POST variable "queries", with the current dataset index (from 0) in the POST variable "dataset". The url can include additional variables encoded via GET.',
 	'queryCol' => 'Column of input files to use as query ID. Required if magnitude files are specified.',
 	'random' => 'Pick from the best hits randomly instead of finding the lowest common ancestor.',
